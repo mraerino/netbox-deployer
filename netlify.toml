@@ -3,7 +3,13 @@ build = "yarn build && yarn functions:build"
 functions = "functions-dist"
 publish = "build"
 
-[[redirects]]
-from = "/*"
-to = "index.html"
-status = 200
+# [[redirects]]
+# from = "/heroku-git/*"
+# to = "https://git.heroku.com/:splat"
+# status = 200
+# force = true
+
+# [[redirects]]
+# from = "/*"
+# to = "index.html"
+# status = 200

@@ -8,3 +8,5 @@ interface HerokuTokenResponse {
   user_id: string;
   session_nonce: string;
 }
+
+declare module "@isomorphic-git/lightning-fs";

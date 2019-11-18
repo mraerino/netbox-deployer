@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@heroku-cli/schema": "^1.0.25",
+    "@isomorphic-git/lightning-fs": "^3.4.1",
     "@reach/router": "^1.2.1",
     "@types/aws-lambda": "^8.10.36",
     "@types/jest": "24.0.23",
@@ -15,6 +16,8 @@
     "@types/request": "^2.48.3",
     "@types/request-promise-native": "^1.0.17",
     "encoding": "^0.1.12",
+    "http-proxy-middleware": "^0.20.0",
+    "isomorphic-git": "^0.70.7",
     "node-fetch": "^2.6.0",
     "qs": "^6.9.1",
     "random-bytes": "^1.0.0",

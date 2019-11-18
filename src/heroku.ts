@@ -2,6 +2,7 @@ import HerokuPlatformApi from "@heroku-cli/schema";
 import { useMemo } from "react";
 
 import { useAccessToken } from "./auth";
+import { readFile as gitReadFile } from "./git";
 
 const apiBase = "https://api.heroku.com";
 
@@ -55,5 +56,8 @@ export const newClient = (token: string) => {
     return request<HerokuPlatformApi.App[]>(RequestMethod.Get, "/apps");
   };
 
-  return { getApps };
+  const readFile = (project: string, filepath: string) =>
+    gitReadFile(project, filepath, token);
+
+  return { getApps, readFile };
 };
