@@ -12,6 +12,7 @@
     "@types/react-dom": "16.9.4",
     "@types/request": "^2.48.3",
     "@types/request-promise-native": "^1.0.17",
+    "encoding": "^0.1.12",
     "node-fetch": "^2.6.0",
     "qs": "^6.9.1",
     "random-bytes": "^1.0.0",
