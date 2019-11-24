@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { RouteComponentProps } from "@reach/router";
 import HerokuPlatformApi from "@heroku-cli/schema";
 
-import { useHerokuClient, newClient } from "./heroku";
+import { withHerokuClient, Client } from "./heroku";
 
 interface BuildInfo {
   source_url: string;
@@ -47,47 +47,46 @@ const getAppInfo = (client: Client) => async (
   return info;
 };
 
-type Client = ReturnType<typeof newClient>;
+export const ListApps: React.FC<RouteComponentProps> = withHerokuClient(
+  ({ herokuClient: client }) => {
+    const [loading, setLoading] = useState(true);
+    const [apps, setApps] = useState<AppInfo[]>([]);
 
-export const ListApps: React.FC<RouteComponentProps> = () => {
-  const client = useHerokuClient();
-  const [loading, setLoading] = useState(true);
-  const [apps, setApps] = useState<AppInfo[]>([]);
+    const loadApps = useCallback(
+      async (client: Client) => {
+        try {
+          const apps = await client.getApps();
+          const transformer = getAppInfo(client);
+          const appsTransformed = await Promise.all(apps.map(transformer));
+          setApps(appsTransformed);
+          setLoading(false);
+        } catch (e) {
+          console.error(e);
+        }
+      },
+      [setApps, setLoading]
+    );
 
-  const loadApps = useCallback(
-    async (client: Client) => {
-      try {
-        const apps = await client.getApps();
-        const transformer = getAppInfo(client);
-        const appsTransformed = await Promise.all(apps.map(transformer));
-        setApps(appsTransformed);
-        setLoading(false);
-      } catch (e) {
-        console.error(e);
+    useEffect(() => {
+      if (client === null) {
+        return;
       }
-    },
-    [setApps, setLoading]
-  );
+      loadApps(client);
+    }, [client, loadApps]);
 
-  useEffect(() => {
-    if (client === null) {
-      return;
+    if (loading) {
+      return <p>Loading...</p>;
     }
-    loadApps(client);
-  }, [client, loadApps]);
 
-  if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div>
+        {apps.map(app => (
+          <div key={app.id}>
+            {app.name}
+            {app.is_managed && "@" + app.netbox_version}
+          </div>
+        ))}
+      </div>
+    );
   }
-
-  return (
-    <div>
-      {apps.map(app => (
-        <div key={app.id}>
-          {app.name}
-          {app.is_managed && "@" + app.netbox_version}
-        </div>
-      ))}
-    </div>
-  );
-};
+);

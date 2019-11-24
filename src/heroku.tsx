@@ -1,7 +1,8 @@
+import React, { useMemo, useContext } from "react";
 import HerokuPlatformApi from "@heroku-cli/schema";
-import { useMemo } from "react";
 
 import { useAccessToken } from "./auth";
+import { RouteComponentProps } from "@reach/router";
 
 const apiBase = "https://api.heroku.com";
 
@@ -20,18 +21,8 @@ class HTTPError extends Error {
   }
 }
 
-export const useHerokuClient = () => {
-  const token = useAccessToken();
-  return useMemo(() => {
-    if (!token) {
-      return null;
-    }
-    return newClient(token);
-  }, [token]);
-};
-
 export const newClient = (token: string) => {
-  const request = async <T>(
+  const request = async <T, _ = {}>(
     method: RequestMethod,
     path: string,
     options: RequestInit = {}
@@ -74,4 +65,32 @@ export const newClient = (token: string) => {
   };
 
   return { getApps, getLastBuild };
+};
+
+export type Client = ReturnType<typeof newClient>;
+
+const HerokuClientContext = React.createContext<Client | null>(null);
+
+export const withHerokuClient = (
+  WrappedComponent: React.ComponentType<{ herokuClient: Client }>
+): React.FC<RouteComponentProps> => {
+  return props => {
+    const client = useContext(HerokuClientContext);
+    if (!client) {
+      return <p>Waiting for Heroku Client...</p>;
+    }
+    return <WrappedComponent {...props} herokuClient={client} />;
+  };
+};
+
+export const HerokuClientWrapper: React.FC = ({ children }) => {
+  const token = useAccessToken();
+  const client = useMemo(() => {
+    if (!token) {
+      return null;
+    }
+    return newClient(token);
+  }, [token]);
+
+  return <HerokuClientContext.Provider value={client} children={children} />;
 };
