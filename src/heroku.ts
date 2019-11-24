@@ -55,5 +55,23 @@ export const newClient = (token: string) => {
     return request<HerokuPlatformApi.App[]>(RequestMethod.Get, "/apps");
   };
 
-  return { getApps };
+  const getLastBuild = async (
+    app_id: string
+  ): Promise<HerokuPlatformApi.Build | null> => {
+    const builds = await request<HerokuPlatformApi.Build[]>(
+      RequestMethod.Get,
+      `/apps/${app_id}/builds`,
+      {
+        headers: {
+          Range: "created_at; max=1, order=desc"
+        }
+      }
+    );
+    if (builds.length < 1) {
+      return null;
+    }
+    return builds[0];
+  };
+
+  return { getApps, getLastBuild };
 };
