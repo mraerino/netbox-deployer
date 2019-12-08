@@ -28,15 +28,22 @@ const transformArchive = (tarURL: string, version: string) =>
         return;
       }
 
-      const buf = Buffer.alloc(header.size || 1024);
-      stream.on("end", () => {
-        const config: HerokuContainerConfig =
-          yaml.safeLoad(buf.toString("utf-8")) || {};
-        config.build.config.VERSION = version;
-        packer.entry({ name: header.name }, yaml.safeDump(config), next);
-      });
+      const chunks: Buffer[] = [];
       stream.on("data", (chunk: Buffer) => {
-        buf.write(chunk.toString());
+        chunks.push(chunk);
+      });
+      stream.on("end", () => {
+        const buf = Buffer.concat(chunks);
+        try {
+          const config: HerokuContainerConfig =
+            yaml.safeLoad(buf.toString("utf-8")) || {};
+          config.build.config.VERSION = version;
+          packer.entry({ name: header.name }, yaml.safeDump(config), next);
+        } catch (e) {
+          console.error("Error while parsing yaml:", e);
+          console.log("File content:", buf.toString("utf-8"));
+          reject("Failed parsing yaml");
+        }
       });
     });
     extractor.on("finish", function() {
