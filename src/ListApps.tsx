@@ -3,6 +3,7 @@ import { RouteComponentProps } from "@reach/router";
 import HerokuPlatformApi from "@heroku-cli/schema";
 
 import { withHerokuClient, Client } from "./heroku";
+import { DeployPane } from "./Setup";
 
 interface BuildInfo {
   source_url: string;
@@ -80,6 +81,7 @@ export const ListApps: React.FC<RouteComponentProps> = withHerokuClient(
 
     return (
       <div>
+        <DeployPane />
         {apps.map(app => (
           <div key={app.id}>
             {app.name}

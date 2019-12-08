@@ -21,6 +21,28 @@ class HTTPError extends Error {
   }
 }
 
+export interface AppSetupSourceBlob {
+  url: string;
+  version?: string;
+  checksum?: string;
+}
+
+export interface AppSetupParams {
+  app: Partial<{
+    locked: boolean;
+    name: string;
+    organization: string;
+    personal: boolean;
+    region: string;
+    space: string;
+    stack: string;
+  }>;
+  overrides: Partial<{
+    buildpacks: string[];
+    env: { [k: string]: string };
+  }>;
+}
+
 export const newClient = (token: string) => {
   const request = async <T, _ = {}>(
     method: RequestMethod,
@@ -64,16 +86,39 @@ export const newClient = (token: string) => {
     return builds[0];
   };
 
-  return { getApps, getLastBuild };
+  const createAppSetup = async (
+    source_blob: AppSetupSourceBlob,
+    params?: Partial<AppSetupParams>
+  ) => {
+    return request<HerokuPlatformApi.AppSetup>(
+      RequestMethod.Post,
+      "/app-setups",
+      {
+        body: JSON.stringify({
+          source_blob,
+          ...params
+        })
+      }
+    );
+  };
+
+  const getAppSetup = async (app_setup_id: string) => {
+    return request<HerokuPlatformApi.AppSetup>(
+      RequestMethod.Get,
+      `/app-setups/${app_setup_id}`
+    );
+  };
+
+  return { getApps, getLastBuild, createAppSetup, getAppSetup };
 };
 
 export type Client = ReturnType<typeof newClient>;
 
 const HerokuClientContext = React.createContext<Client | null>(null);
 
-export const withHerokuClient = (
-  WrappedComponent: React.ComponentType<{ herokuClient: Client }>
-): React.FC<RouteComponentProps> => {
+export const withHerokuClient = <T extends RouteComponentProps>(
+  WrappedComponent: React.ComponentType<T & { herokuClient: Client }>
+): React.FC<T> => {
   return props => {
     const client = useContext(HerokuClientContext);
     if (!client) {

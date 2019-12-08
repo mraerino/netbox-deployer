@@ -5,6 +5,7 @@ import { ListApps } from "./ListApps";
 import { HerokuAuthWrapper } from "./auth";
 import { Router, Redirect } from "@reach/router";
 import { HerokuClientWrapper } from "./heroku";
+import { SetupPage } from "./Setup";
 
 const App: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const App: React.FC = () => {
           <Router>
             <Redirect from="/" to="/apps" />
             <ListApps path="/apps" />
+            <SetupPage path="/setup/:id" />
           </Router>
         </HerokuClientWrapper>
       </HerokuAuthWrapper>

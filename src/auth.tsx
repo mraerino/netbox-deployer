@@ -11,7 +11,7 @@ const authorize = async () => {
   window.location.href = `https://id.heroku.com/oauth/authorize?${qs.stringify({
     client_id: process.env.REACT_APP_HEROKU_APP_ID,
     response_type: "code",
-    scope: "write",
+    scope: "global",
     state: JSON.stringify({ nonce, originalURL: window.location.href })
   })}`;
 };
