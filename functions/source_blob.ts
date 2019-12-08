@@ -66,11 +66,11 @@ const transformArchive = (tarURL: string, version: string) =>
 
     const gzip = zlib.createGzip();
     gzip.on("error", reject);
-    const result = { buf: Buffer.from([]) };
-    gzip.on("end", () => resolve(result.buf));
+    const result: Buffer[] = [];
+    gzip.on("end", () => resolve(Buffer.concat(result)));
     gzip.on("data", (chunk: Buffer) => {
       console.log("writing bytes:", chunk.length);
-      result.buf = Buffer.concat([result.buf, chunk]);
+      result.push(chunk);
     });
     packer.pipe(gzip);
   });
