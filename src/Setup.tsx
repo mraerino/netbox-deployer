@@ -4,6 +4,7 @@ import HerokuPlatformApi from "@heroku-cli/schema";
 import { LazyLog } from "react-lazylog";
 
 import { withHerokuClient } from "./heroku";
+import { secondaryButtonClasses, primaryButtonClasses } from "./design";
 
 const targetVersion = "v2.6.7";
 const fallbackOrigin = "https://netbox-deploy.netlify.com";
@@ -26,10 +27,7 @@ export const DeployPane: React.FC = withHerokuClient(({ herokuClient }) => {
 
   return (
     <div>
-      <button
-        onClick={createSetup}
-        className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
-      >
+      <button onClick={createSetup} className={primaryButtonClasses}>
         Deploy a Netbox
       </button>
     </div>
@@ -90,7 +88,7 @@ const StatusPane: React.FC<{ setup: HerokuPlatformApi.AppSetup }> = ({
         href={setup.resolved_success_url}
         target="_blank"
         rel="noopener noreferrer"
-        className="border border-purple-700 hover:bg-purple-100 text-purple-700 font-bold py-2 px-4 rounded"
+        className={secondaryButtonClasses}
       >
         Open App
       </a>

@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useReducer, useContext } from "react";
 import randomBytes from "random-bytes";
 import qs from "qs";
+import { primaryButtonClasses } from "./design";
 
 const LS_KEY_NONCE = "heroku_oauth_nonce";
 const LS_KEY_AUTH = "heroku_oauth_info";
@@ -187,10 +188,7 @@ export const HerokuAuthWrapper: React.FC = ({ children }) => {
     <div>
       {state.error !== "" && <p>{state.error}</p>}
       {state.tokenInfo === null ? (
-        <button
-          className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => authorize()}
-        >
+        <button className={primaryButtonClasses} onClick={() => authorize()}>
           Login using Heroku
         </button>
       ) : (
