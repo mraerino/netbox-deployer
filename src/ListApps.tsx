@@ -4,6 +4,7 @@ import HerokuPlatformApi from "@heroku-cli/schema";
 
 import { withHerokuClient, Client } from "./heroku";
 import { DeployPane } from "./Setup";
+import { parseVersion } from "./utils";
 
 interface BuildInfo {
   source_url: string;
@@ -17,8 +18,6 @@ interface AppInfo {
   netbox_version?: string;
   last_build?: BuildInfo;
 }
-
-const ManagedVersionRegex = /^netbox-heroku@([0-9.]+)$/;
 
 const getAppInfo = (client: Client) => async (
   app: HerokuPlatformApi.App
@@ -35,13 +34,13 @@ const getAppInfo = (client: Client) => async (
     build.source_blob.version &&
     build.source_blob.url
   ) {
-    const matches = ManagedVersionRegex.exec(build.source_blob.version);
     info.last_build = {
       source_url: build.source_blob.url!,
       source_version: build.source_blob.version!
     };
-    if (matches !== null) {
-      info.netbox_version = matches[1];
+    const version = parseVersion(build.source_blob.version);
+    if (version !== null) {
+      info.netbox_version = version;
       info.is_managed = true;
     }
   }
