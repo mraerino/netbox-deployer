@@ -68,6 +68,24 @@ export const newClient = (token: string) => {
     return request<HerokuPlatformApi.App[]>(RequestMethod.Get, "/apps");
   };
 
+  const getApp = async (id: string) => {
+    return request<HerokuPlatformApi.App>(RequestMethod.Get, `/apps/${id}`);
+  };
+
+  const getAppEnv = async (app_id: string) => {
+    return request<Record<string, string>>(
+      RequestMethod.Get,
+      `/apps/${app_id}/config-vars`
+    );
+  };
+
+  const getDomains = async (app_id: string) => {
+    return request<HerokuPlatformApi.Domain[]>(
+      RequestMethod.Get,
+      `/apps/${app_id}/domains`
+    );
+  };
+
   const getLastBuild = async (
     app_id: string
   ): Promise<HerokuPlatformApi.Build | null> => {
@@ -84,6 +102,24 @@ export const newClient = (token: string) => {
       return null;
     }
     return builds[0];
+  };
+
+  const getLastRelease = async (
+    app_id: string
+  ): Promise<HerokuPlatformApi.Release | null> => {
+    const releases = await request<HerokuPlatformApi.Release[]>(
+      RequestMethod.Get,
+      `/apps/${app_id}/releases`,
+      {
+        headers: {
+          Range: "version; max=1, order=desc"
+        }
+      }
+    );
+    if (releases.length < 1) {
+      return null;
+    }
+    return releases[0];
   };
 
   const createAppSetup = async (
@@ -109,7 +145,16 @@ export const newClient = (token: string) => {
     );
   };
 
-  return { getApps, getLastBuild, createAppSetup, getAppSetup };
+  return {
+    getApps,
+    getApp,
+    getAppEnv,
+    getDomains,
+    getLastBuild,
+    getLastRelease,
+    createAppSetup,
+    getAppSetup
+  };
 };
 
 export type Client = ReturnType<typeof newClient>;

@@ -15,6 +15,7 @@
     "@types/request": "^2.48.3",
     "@types/request-promise-native": "^1.0.17",
     "encoding": "^0.1.12",
+    "immer": "^5.0.0",
     "js-yaml": "^3.13.1",
     "node-fetch": "^2.6.0",
     "qs": "^6.9.1",

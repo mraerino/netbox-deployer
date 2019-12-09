@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { RouteComponentProps } from "@reach/router";
+import { RouteComponentProps, Link } from "@reach/router";
 import HerokuPlatformApi from "@heroku-cli/schema";
 
 import { withHerokuClient, Client } from "./heroku";
@@ -86,7 +86,9 @@ export const ListApps: React.FC<RouteComponentProps> = withHerokuClient(
         <h2 className="text-2xl">Managed Apps</h2>
         {managedApps.map(app => (
           <div key={app.id}>
-            {app.name}@{app.netbox_version}
+            <Link to={`/apps/${app.id}`}>
+              {app.name}@{app.netbox_version}
+            </Link>
           </div>
         ))}
         <h2 className="text-2xl">Other Apps</h2>
