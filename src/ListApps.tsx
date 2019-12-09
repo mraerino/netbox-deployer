@@ -50,7 +50,8 @@ const getAppInfo = (client: Client) => async (
 export const ListApps: React.FC<RouteComponentProps> = withHerokuClient(
   ({ herokuClient: client }) => {
     const [loading, setLoading] = useState(true);
-    const [apps, setApps] = useState<AppInfo[]>([]);
+    const [managedApps, setManagedApps] = useState<AppInfo[]>([]);
+    const [otherApps, setOtherApps] = useState<AppInfo[]>([]);
 
     const loadApps = useCallback(
       async (client: Client) => {
@@ -58,13 +59,14 @@ export const ListApps: React.FC<RouteComponentProps> = withHerokuClient(
           const apps = await client.getApps();
           const transformer = getAppInfo(client);
           const appsTransformed = await Promise.all(apps.map(transformer));
-          setApps(appsTransformed);
+          setManagedApps(appsTransformed.filter(a => a.is_managed));
+          setOtherApps(appsTransformed.filter(a => !a.is_managed));
           setLoading(false);
         } catch (e) {
           console.error(e);
         }
       },
-      [setApps, setLoading]
+      [setManagedApps, setOtherApps, setLoading]
     );
 
     useEffect(() => {
@@ -81,11 +83,15 @@ export const ListApps: React.FC<RouteComponentProps> = withHerokuClient(
     return (
       <div>
         <DeployPane />
-        {apps.map(app => (
+        <h2 className="text-2xl">Managed Apps</h2>
+        {managedApps.map(app => (
           <div key={app.id}>
-            {app.name}
-            {app.is_managed && "@" + app.netbox_version}
+            {app.name}@{app.netbox_version}
           </div>
+        ))}
+        <h2 className="text-2xl">Other Apps</h2>
+        {otherApps.map(app => (
+          <div key={app.id}>{app.name}</div>
         ))}
       </div>
     );
