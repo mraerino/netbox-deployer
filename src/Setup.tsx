@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { RouteComponentProps, navigate } from "@reach/router";
+import { RouteComponentProps, navigate, Link } from "@reach/router";
 import HerokuPlatformApi from "@heroku-cli/schema";
 import { LazyLog } from "react-lazylog";
 
@@ -83,6 +83,11 @@ const StatusPane: React.FC<{ setup: HerokuPlatformApi.AppSetup }> = ({
         done={setup.status === "succeeded"}
       />
     </div>
+    {setup.status === "succeeded" && (
+      <Link to={`/apps/${setup.app!.id}`} className={secondaryButtonClasses}>
+        Manage Deployment
+      </Link>
+    )}
     {!!setup.resolved_success_url && (
       <a
         href={setup.resolved_success_url}
