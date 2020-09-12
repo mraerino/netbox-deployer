@@ -16,7 +16,7 @@
     "@types/request-promise-native": "^1.0.17",
     "encoding": "^0.1.12",
     "js-yaml": "^3.13.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "qs": "^6.9.1",
     "random-bytes": "^1.0.0",
     "react": "^16.12.0",
